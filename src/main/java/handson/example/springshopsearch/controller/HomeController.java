@@ -27,7 +27,6 @@ public class HomeController {
 
 	List<Item> list;
 
-	/*商品名検索*/
 	@GetMapping
 	public String inde(
 			Model model,
