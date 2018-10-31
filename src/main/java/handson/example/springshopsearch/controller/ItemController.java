@@ -17,6 +17,8 @@ import handson.example.springshopsearch.model.item.ItemRepository;
 @RequestMapping("/items")
 public class ItemController {
 
+	List<Item> list;
+
 	@GetMapping
 	public String listItem(Model model) {
 
@@ -30,12 +32,26 @@ public class ItemController {
 		return "item_form";
 	}
 
+	@GetMapping("edit/{id:[0-9]+}") //IDを受け取る
+	public String getEditForm(Model model, @PathVariable("id") Long id) {
+		//addAttributeで1つのアイテムを返す
+		model.addAttribute("item", itemRepository.getOne(id));
+		return "edit";
+	}
+
 	//Autowired…スプリングのDIという機能。シングルトンの実現
 	@Autowired
 	ItemRepository itemRepository;
 
 	@PostMapping("/add")
 	public String registerItem(Item item) {
+		itemRepository.save(item);
+		return "redirect:/items";
+	}
+
+	//編集した内容を上書きする
+	@PostMapping("edit/{id:[0-9]+}")
+	public String editItem(Item item) {
 		itemRepository.save(item);
 		return "redirect:/items";
 	}
