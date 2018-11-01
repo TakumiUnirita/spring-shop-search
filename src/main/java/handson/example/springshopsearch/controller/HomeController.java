@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import handson.example.springshopsearch.model.item.Item;
-import handson.example.springshopsearch.model.item.ItemRepository;
+import handson.example.springshopsearch.service.HomeService;
 
 @Controller
 @RequestMapping("/")
@@ -22,8 +22,9 @@ public class HomeController {
 		return "about";
 	}
 
+	//インスタンス生成
 	@Autowired
-	ItemRepository itemRepository;
+	HomeService homeService;
 
 	List<Item> list;
 
@@ -36,20 +37,25 @@ public class HomeController {
 		if (keyword.isPresent()) {
 			if (radio.isPresent()) {
 				switch (radio.get()) {
+				//名前検索
 				case "name":
-					list = itemRepository.findByNameContainsOrderByIdAsc(keyword.get());
+					list = homeService.findOnlyName(keyword.get());
 					break;
+				//商品説明検索
 				case "discription":
-					list = itemRepository.findByDescriptionContainsOrderByIdAsc(keyword.get());
+					list = homeService.findOnlyDiscription(keyword.get());
 					break;
+				//名前と商品説明検索
 				case "all":
-					list = itemRepository.findByNameOrDescriptionContainsOrderByIdAsc(keyword.get(),keyword2.get());
+					list = homeService.findNameAndDiscription(keyword.get(), keyword2.get());
 					break;
 				}
 			}
 		} else {
-			list = itemRepository.findAll();
+			//検索テキストがNULLだった場合は全検索
+			list = homeService.findAll();
 		}
+
 		model.addAttribute("items", list);
 		return "index";
 	}
